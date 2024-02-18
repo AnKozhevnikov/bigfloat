@@ -6,7 +6,6 @@
 #include <mutex>
 
 using namespace aak;
-using namespace std;
 
 const int threads = 16;
 
@@ -16,7 +15,7 @@ bigfloat four=4_bf;
 bigfloat two=2_bf;
 bigfloat one=1_bf;
 
-vector<bigfloat> v;
+std::vector<bigfloat> v;
 
 void foo(int l, int r) {
     static std::mutex m;
@@ -30,15 +29,15 @@ void foo(int l, int r) {
 }
 
 int main() {
-    cout << "Enter precision" << endl;
+    std::cout << "Enter precision" << std::endl;
     int n;
-    cin >> n;
+    std::cin >> n;
     int len=n;
 
     if (n==0) n=threads;
     else while (n%threads!=0) ++n;
 
-    auto start = chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
     bigfloat base = 1_bf;
     v.resize(n);
     for (int k = 0; k < v.size(); k++) {
@@ -46,16 +45,16 @@ int main() {
         base *= 16_bf;
     }
 
-    vector<thread> vv(threads);
+    std::vector<std::thread> vv(threads);
     for (int i = 0; i < vv.size(); ++i) {
-        vv[i] = thread(foo, i*(n/threads), (i+1)*(n/threads));
+        vv[i] = std::thread(foo, i*(n/threads), (i+1)*(n/threads));
     }
     for (auto &i: vv) i.join();
 
-    cout << pi.decimal(len) << endl;
-    auto finish = chrono::high_resolution_clock::now();
-    auto duration = chrono::duration_cast<chrono::milliseconds>(finish - start);
-    cout << duration.count() << "ms" << endl;
+    std::cout << pi.decimal(len) << std::endl;
+    auto finish = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start);
+    std::cout << duration.count() << "ms" << std::endl;
 
     return 0;
 }
