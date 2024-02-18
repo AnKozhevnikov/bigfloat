@@ -36,9 +36,7 @@ namespace aak {
         _precision=precision;
     }
 
-    bigfloat::~bigfloat() {
-        //nothing to destroy
-    }
+    bigfloat::~bigfloat() = default;
 
     std::string bigfloat::as_string() const {
         if (is_nan()) return "NaN";

@@ -33,9 +33,7 @@ namespace aak {
         _data = std::make_unique<bigarithm>(other);
     }
 
-    bigint::~bigint() {
-        //nothing to destroy
-    }
+    bigint::~bigint() = default;
 
     std::string bigint::as_string() const {
         if (is_nan()) return "NaN";

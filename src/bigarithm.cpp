@@ -23,9 +23,7 @@ namespace aak {
         _state = other_state;
     }
 
-    bigarithm::~bigarithm() {
-        //nothing to destroy
-    }
+    bigarithm::~bigarithm() = default;
 
     bigarithm &bigarithm::operator=(const bigarithm &a) {
         _bits = a._bits;
