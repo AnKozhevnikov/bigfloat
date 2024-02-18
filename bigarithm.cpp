@@ -50,11 +50,36 @@ namespace aak {
         return ret;
     }
 
-    bigarithm bigarithm::operator+(const bigarithm &b) const {
-        if (is_nan() || b.is_nan()) return get_nan();
-        if (is_undef() || b.is_undef()) return get_undef();
-        if (is_infinity() && b.is_infinity()) return get_undef();
-        if (is_infinity() || b.is_infinity()) return get_infinity();
+    bigarithm operator+(bigarithm a, const bigarithm &b) {
+        a+=b;
+        return a;
+    }
+
+    bigarithm operator-(bigarithm a, const bigarithm &b) {
+        a-=b;
+        return a;
+    }
+
+    bigarithm operator*(bigarithm a, const bigarithm &b) {
+        a*=b;
+        return a;
+    }
+
+    bigarithm operator/(bigarithm a, const bigarithm &b) {
+        a/=b;
+        return a;
+    }
+
+    bigarithm operator%(bigarithm a, const bigarithm &b) {
+        a%=b;
+        return a;
+    }
+
+    bigarithm &bigarithm::operator+=(const bigarithm &b) {
+        if (is_nan() || b.is_nan()) {*this=get_nan(); return *this;}
+        if (is_undef() || b.is_undef()) {*this=get_undef(); return *this;}
+        if (is_infinity() && b.is_infinity()) {*this=get_undef(); return *this;}
+        if (is_infinity() || b.is_infinity()) {*this=get_infinity(); return *this;}
 
         if (_state == b._state) {
             bigarithm ret(*this);
@@ -75,7 +100,7 @@ namespace aak {
             }
             if (ret.is_zero()) ret._state = positive;
             ret.delete_leading();
-            return ret;
+            *this=ret;
         } else {
             bigarithm big = abs(*this);
             bigarithm small = abs(b);
@@ -106,12 +131,13 @@ namespace aak {
 
             if (big.is_zero()) big._state = positive;
             big.delete_leading();
-            return big;
+            *this=big;
         }
+        return *this;
     }
 
-    bigarithm bigarithm::operator-(const bigarithm &b) const {
-        return *this + (-b);
+    bigarithm &bigarithm::operator-=(const bigarithm &b) {
+        return *this += -b;
     }
 
     std::vector<u_int32_t> karatsuba(std::vector<u_int32_t> a, std::vector<u_int32_t> b) {
@@ -201,12 +227,12 @@ namespace aak {
         return ret;
     }
 
-    bigarithm bigarithm::operator*(const bigarithm &b) const {
-        if (is_nan() || b.is_nan()) return get_nan();
-        if (is_undef() || b.is_undef()) return get_undef();
+    bigarithm &bigarithm::operator*=(const bigarithm &b) {
+        if (is_nan() || b.is_nan()) {*this=get_nan(); return *this;}
+        if (is_undef() || b.is_undef()) {*this=get_undef(); return *this;}
         if (is_infinity() || b.is_infinity()) {
-            if (is_zero() || b.is_zero()) return get_undef();
-            return get_infinity();
+            if (is_zero() || b.is_zero()) {*this=get_undef(); return *this;}
+            *this=get_infinity(); return *this;
         }
 
         bigarithm c;
@@ -219,20 +245,21 @@ namespace aak {
 
         if (is_zero()) c._state = positive;
         c.delete_leading();
-        return c;
+        *this=c;
+        return *this;
     }
 
-    bigarithm bigarithm::operator/(const bigarithm &b) const {
-        if (is_nan() || b.is_nan()) return get_nan();
-        if (is_undef() || b.is_undef()) return get_undef();
-        if (is_zero() && b.is_zero()) return get_undef();
-        if (is_infinity() && b.is_infinity()) return get_undef();
-        if (b.is_infinity()) return get_zero();
+    bigarithm &bigarithm::operator/=(const bigarithm &b) {
+        if (is_nan() || b.is_nan()) {*this=get_nan(); return *this;}
+        if (is_undef() || b.is_undef()) {*this=get_undef(); return *this;}
+        if (is_zero() && b.is_zero()) {*this=get_undef(); return *this;}
+        if (is_infinity() && b.is_infinity()) {*this=get_undef(); return *this;}
+        if (b.is_infinity()) {*this=get_zero(); return *this;}
         if (is_infinity()) return *this;
-        if (is_zero()) return get_zero();
-        if (b.is_zero()) return get_infinity();
+        if (is_zero()) return *this;
+        if (b.is_zero()) {*this=get_infinity(); return *this;}
 
-        if (abs(*this) < abs(b)) return get_zero();
+        if (abs(*this) < abs(b)) {*this=get_zero(); return *this;}
 
         int pos = 0;
         bigarithm c = abs(b);
@@ -259,41 +286,18 @@ namespace aak {
         if ((_state == negative && b._state == positive) || (_state == positive && b._state == negative))
             ret._state = negative;
         ret.delete_leading();
-        return ret;
-    }
-
-    bigarithm bigarithm::operator%(const bigarithm &b) const {
-        if (is_nan() || b.is_nan()) return get_nan();
-        if ((*this).is_normal() && b.is_infinity()) return *this;
-        if (is_abnormal() || b.is_abnormal() || b.is_zero()) return get_undef();
-        bigarithm ret = abs(*this) - (abs(*this) / abs(b) * abs(b));
-        if (_state == negative) ret._state = negative;
-        ret.delete_leading();
-        return ret;
-    }
-
-    bigarithm &bigarithm::operator+=(const bigarithm &b) {
-        *this = (*this) + b;
-        return *this;
-    }
-
-    bigarithm &bigarithm::operator-=(const bigarithm &b) {
-        *this = (*this) - b;
-        return *this;
-    }
-
-    bigarithm &bigarithm::operator*=(const bigarithm &b) {
-        *this = (*this) * b;
-        return *this;
-    }
-
-    bigarithm &bigarithm::operator/=(const bigarithm &b) {
-        *this = (*this) / b;
+        *this=ret;
         return *this;
     }
 
     bigarithm &bigarithm::operator%=(const bigarithm &b) {
-        *this = (*this) % b;
+        if (is_nan() || b.is_nan()) {*this=get_nan(); return *this;}
+        if ((*this).is_normal() && b.is_infinity()) return *this;
+        if (is_abnormal() || b.is_abnormal() || b.is_zero()) {*this=get_undef(); return *this;}
+        bigarithm ret = abs(*this) - (abs(*this) / abs(b) * abs(b));
+        if (_state == negative) ret._state = negative;
+        ret.delete_leading();
+        *this=ret;
         return *this;
     }
 

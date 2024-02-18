@@ -223,52 +223,58 @@ namespace aak {
         return -(*_data);
     }
 
-    bigint bigint::operator+(const bigint &b) const {
-        bigint ret = (*_data) + (*b._data);
-        return ret;
+    bigint operator+(bigint a, const bigint &b) {
+        a+=b;
+        return a;
     }
 
-    bigint bigint::operator-(const bigint &b) const {
-        return *this + (-b);
+    bigint operator-(bigint a, const bigint &b) {
+        a-=b;
+        return a;
     }
 
-    bigint bigint::operator*(const bigint &b) const {
-        bigint ret = (*_data) * (*b._data);
-        return ret;
+    bigint operator*(bigint a, const bigint &b) {
+        a*=b;
+        return a;
     }
 
-    bigint bigint::operator/(const bigint &b) const {
-        bigint ret = (*_data) / (*b._data);
-        return ret;
+    bigint operator/(bigint a, const bigint &b) {
+        a/=b;
+        return a;
     }
 
-    bigint bigint::operator%(const bigint &b) const {
-        bigint ret = (*_data) % (*b._data);
-        return ret;
+    bigint operator%(bigint a, const bigint &b) {
+        a%=b;
+        return a;
     }
 
     bigint &bigint::operator+=(const bigint &b) {
-        *this = (*this) + b;
+        bigint ret= *(this->_data) + *(b._data);
+        *this=ret;
         return *this;
     }
 
     bigint &bigint::operator-=(const bigint &b) {
-        *this = (*this) - b;
+        bigint ret= *(this->_data) - *(b._data);
+        *this=ret;
         return *this;
     }
 
     bigint &bigint::operator*=(const bigint &b) {
-        *this = (*this) * b;
+        bigint ret= *(this->_data) * *(b._data);
+        *this=ret;
         return *this;
     }
 
     bigint &bigint::operator/=(const bigint &b) {
-        *this = (*this) / b;
+        bigint ret= *(this->_data) / *(b._data);
+        *this=ret;
         return *this;
     }
 
     bigint &bigint::operator%=(const bigint &b) {
-        *this = (*this) % b;
+        bigint ret= *(this->_data) % *(b._data);
+        *this=ret;
         return *this;
     }
 
@@ -296,12 +302,22 @@ namespace aak {
         return !(*this > b);
     }
 
-    bigint bigint::operator<<(const bigint &shift) const {
-        if (is_nan() || shift.is_nan()) return bigarithm::get_nan();
-        if (is_undef() || shift.is_undef()) return bigarithm::get_undef();
-        if (shift.is_negative() || shift.is_infinity()) return bigarithm::get_undef();
-        if (is_zero()) return bigarithm::get_zero();
-        if (is_infinity()) return bigarithm::get_infinity();
+    bigint operator<<(bigint a, const bigint &shift) {
+        a<<=shift;
+        return a;
+    }
+
+    bigint operator>>(bigint a, const bigint &shift) {
+        a>>=shift;
+        return a;
+    }
+
+    bigint &bigint::operator<<=(const bigint &shift) {
+        if (is_nan() || shift.is_nan()) {*this = bigarithm::get_nan(); return *this;}
+        if (is_undef() || shift.is_undef()) {*this = bigarithm::get_undef(); return *this;}
+        if (shift.is_negative() || shift.is_infinity()) {*this = bigarithm::get_undef(); return *this;}
+        if (is_zero()) *this;
+        if (is_infinity()) *this;
 
         bigint ret = *this;
         bigint cnt = 0;
@@ -309,16 +325,16 @@ namespace aak {
             *ret._data <<= std::min(POW32, (shift - cnt).as_int64());
             cnt += std::min(POW32, (shift - cnt).as_int64());
         }
-
-        return ret;
+        *this=ret;
+        return *this;
     }
 
-    bigint bigint::operator>>(const bigint &shift) const {
-        if (is_nan() || shift.is_nan()) return bigarithm::get_nan();
-        if (is_undef() || shift.is_undef()) return bigarithm::get_undef();
-        if (shift.is_negative() || shift.is_infinity()) return bigarithm::get_undef();
-        if (is_infinity()) return (*this);
-        if (shift.is_infinity()) return bigarithm::get_zero();
+    bigint &bigint::operator>>=(const bigint &shift) {
+        if (is_nan() || shift.is_nan()) {*this = bigarithm::get_nan(); return *this;}
+        if (is_undef() || shift.is_undef()) {*this = bigarithm::get_undef(); return *this;}
+        if (shift.is_negative() || shift.is_infinity()) {*this = bigarithm::get_undef(); return *this;}
+        if (is_infinity()) return *this;
+        if (shift.is_infinity()) {*this = bigarithm::get_zero(); return *this;}
 
         bigint ret = *this;
         bigint cnt = 0;
@@ -327,16 +343,7 @@ namespace aak {
             cnt += std::min(POW32, (shift - cnt).as_int64());
         }
 
-        return ret;
-    }
-
-    bigint &bigint::operator<<=(const bigint &shift) {
-        *this = (*this) << shift;
-        return *this;
-    }
-
-    bigint &bigint::operator>>=(const bigint &shift) {
-        *this = (*this) >> shift;
+        *this=ret;
         return *this;
     }
 

@@ -28,11 +28,11 @@ namespace aak {
         bigarithm operator+() const; // +a
         bigarithm operator-() const; // -a
 
-        bigarithm operator+(const bigarithm &b) const; // a + b
-        bigarithm operator-(const bigarithm &b) const; // a - b
-        bigarithm operator*(const bigarithm &b) const; // a * b
-        bigarithm operator/(const bigarithm &b) const; // a / b
-        bigarithm operator%(const bigarithm &b) const; // a % b
+        friend bigarithm operator+(bigarithm a, const bigarithm &b); // a + b
+        friend bigarithm operator-(bigarithm a, const bigarithm &b); // a - b
+        friend bigarithm operator*(bigarithm a, const bigarithm &b); // a * b
+        friend bigarithm operator/(bigarithm a, const bigarithm &b); // a / b
+        friend bigarithm operator%(bigarithm a, const bigarithm &b); // a % b
 
         bigarithm &operator+=(const bigarithm &b); // a += b;
         bigarithm &operator-=(const bigarithm &b); // a -= b;

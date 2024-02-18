@@ -48,11 +48,11 @@ namespace aak {
         bigint operator+() const; // +a
         bigint operator-() const; // -a
 
-        bigint operator+(const bigint &b) const; // a + b
-        bigint operator-(const bigint &b) const; // a - b
-        bigint operator*(const bigint &b) const; // a * b
-        bigint operator/(const bigint &b) const; // a / b
-        bigint operator%(const bigint &b) const; // a % b
+        friend bigint operator+(bigint a, const bigint &b); // a + b
+        friend bigint operator-(bigint a, const bigint &b); // a - b
+        friend bigint operator*(bigint a, const bigint &b); // a * b
+        friend bigint operator/(bigint a, const bigint &b); // a / b
+        friend bigint operator%(bigint a, const bigint &b); // a % b
 
         bigint &operator+=(const bigint &b); // a += b;
         bigint &operator-=(const bigint &b); // a -= b;
@@ -69,10 +69,10 @@ namespace aak {
         bool operator<=(const bigint &b) const; // a <= b
 
         // binary shifts
-        bigint operator<<(const bigint &shift) const; // a << b
-        bigint operator>>(const bigint &shift) const; // a >> b
-        bigint &operator<<=(const bigint &shift); // a <<= b;
-        bigint &operator>>=(const bigint &shift); // a >>= b;
+        friend bigint operator<<(bigint a, const bigint &shift); // a << shift
+        friend bigint operator>>(bigint b, const bigint &shift); // a >> shift
+        bigint &operator<<=(const bigint &shift); // a <<= shift;
+        bigint &operator>>=(const bigint &shift); // a >>= shift;
 
         //state checks
         bool is_zero() const; // check for null

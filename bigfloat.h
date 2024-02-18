@@ -46,10 +46,10 @@ namespace aak {
         bigfloat operator+() const; // +a
         bigfloat operator-() const; // -a
 
-        bigfloat operator+(const bigfloat &b) const; // a + b
-        bigfloat operator-(const bigfloat &b) const; // a - b
-        bigfloat operator*(const bigfloat &b) const; // a * b
-        bigfloat operator/(const bigfloat &b) const; // a / b
+        friend bigfloat operator+(bigfloat a, const bigfloat &b); // a + b
+        friend bigfloat operator-(bigfloat a, const bigfloat &b); // a - b
+        friend bigfloat operator*(bigfloat a, const bigfloat &b); // a * b
+        friend bigfloat operator/(bigfloat a, const bigfloat &b); // a / b
 
         bigfloat &operator+=(const bigfloat &b); // a += b;
         bigfloat &operator-=(const bigfloat &b); // a -= b;

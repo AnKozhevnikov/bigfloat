@@ -261,46 +261,48 @@ namespace aak {
         return {-(*_data), _precision};
     }
 
-    bigfloat bigfloat::operator+(const bigfloat &b) const {
-        std::pair<bigfloat, bigfloat> p = _normalize(*this, b);
-        bigfloat ret(*p.first._data + *p.second._data, p.first._precision);
-        return ret;
+    bigfloat operator+(bigfloat a, const bigfloat &b) {
+        a+=b;
+        return a;
     }
 
-    bigfloat bigfloat::operator-(const bigfloat &b) const {
-        return *this + (-b);
+    bigfloat operator-(bigfloat a, const bigfloat &b) {
+        a-=b;
+        return a;
     }
 
-    bigfloat bigfloat::operator*(const bigfloat &b) const {
-        bigfloat ret(*_data**b._data, _precision + b._precision);
-        ret._set_precision(std::max(_precision, b._precision));
-        return ret;
+    bigfloat operator*(bigfloat a, const bigfloat &b) {
+        a*=b;
+        return a;
     }
 
-    bigfloat bigfloat::operator/(const bigfloat &b) const {
-        std::pair<bigfloat, bigfloat> p = _normalize(*this, b);
-        p.first._set_precision(p.first._precision * 2);
-        bigfloat ret(*p.first._data / *p.second._data, p.second._precision);
-        return ret;
+    bigfloat operator/(bigfloat a, const bigfloat &b) {
+        a/=b;
+        return a;
     }
 
     bigfloat &bigfloat::operator+=(const bigfloat &b) {
-        *this = (*this) + b;
+        std::pair<bigfloat, bigfloat> p = _normalize(*this, b);
+        *this = {(*p.first._data) + (*p.second._data), p.first._precision};
         return *this;
     }
 
     bigfloat &bigfloat::operator-=(const bigfloat &b) {
-        *this = (*this) - b;
-        return *this;
+        return *this+=(-b);
     }
 
     bigfloat &bigfloat::operator*=(const bigfloat &b) {
-        *this = (*this) * b;
+        u_int64_t old_precision = _precision;
+        *this = bigfloat(*_data**b._data, _precision + b._precision);
+        _set_precision(std::max(old_precision, b._precision));
         return *this;
     }
 
     bigfloat &bigfloat::operator/=(const bigfloat &b) {
-        *this = (*this) / b;
+        std::pair<bigfloat, bigfloat> p = _normalize(*this, b);
+        p.first._set_precision(p.first._precision * 2);
+        bigfloat ret(*p.first._data / *p.second._data, p.second._precision);
+        *this=ret;
         return *this;
     }
 
