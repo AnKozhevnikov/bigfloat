@@ -249,6 +249,8 @@ namespace aak {
             if (finished) break;
             ++pos;
         }
+
+        _data->delete_leading();
     }
 
     bigfloat bigfloat::operator+() const {

@@ -305,15 +305,24 @@ namespace aak {
                 rhat += v[n-1];
                 if (rhat>=POW32) break;
             }
+            std::vector<u_int32_t> mult(n+1,0);
+            for (int i=0; i<n; i++) {
+                mult[i]=v[i];
+            }
             carry=0;
-            for (int i=0; i<n; ++i) {
-                u_int64_t k = qhat*static_cast<u_int64_t>(v[i])+carry;
-                carry=k>u[j+i];
+            for (int i=0; i<n; i++) {
+                u_int64_t k = qhat*static_cast<u_int64_t>(mult[i])+carry;
+                carry=k/POW32;
+                mult[i] = k%POW32;
+            }
+            mult[n]=carry;
+            carry=0;
+            for (int i=0; i<=n; ++i) {
+                u_int64_t k = static_cast<u_int64_t>(mult[i])+carry;
+                if (k>u[j+i]) carry=1;
+                else carry=0;
                 u[j+i] = (u[j+i]-k%POW32+POW32)%POW32;
             }
-            u_int64_t k=carry;
-            carry=k>u[j+n];
-            u[j+n] = (u[j+n]-k%POW32+POW32)%POW32;
 
             if (carry!=0) {
                 --qhat;

@@ -211,6 +211,8 @@ namespace aak {
             if (finished) break;
             ++pos;
         }
+
+        _data->delete_leading();
     }
 
     bigint bigint::operator+() const {
