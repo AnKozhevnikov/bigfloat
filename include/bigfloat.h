@@ -6,7 +6,7 @@
 #include <vector>
 #include <memory>
 
-const u_int64_t DEFAULT = 21;
+const u_int64_t DEFAULT = 32;
 
 namespace aak {
 // class represents signed float value of any length

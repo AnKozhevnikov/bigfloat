@@ -259,30 +259,76 @@ namespace aak {
 
         if (abs(*this) < abs(b)) {*this=get_zero(); return *this;}
 
-        int pos = 0;
-        bigarithm c = abs(b);
-        while (c <= abs(*this)) {
-            ++pos;
-            c <<= 1;
-        }
-        --pos;
-        c >>= 1;
-        bigarithm ret = get_zero();
-        ret._bits.resize(pos / 32 + 1);
-
-        bigarithm cur;
-        bigarithm mult = ZERO;
-        while (pos >= 0) {
-            if (mult + c <= abs(*this)) {
-                mult += c;
-                ret._bits[pos / 32] += static_cast<u_int32_t>(1) << (pos % 32);
-            }
-            c >>= 1;
-            --pos;
-        }
+        bigarithm ret=get_zero();
 
         if ((_state == negative && b._state == positive) || (_state == positive && b._state == negative))
             ret._state = negative;
+
+        std::vector<u_int32_t> u=this->get_bits();
+        std::vector<u_int32_t> v=b.get_bits();
+        std::vector<u_int32_t> q;
+
+        if (v.size()==1) {
+            u_int32_t carry=0;
+            for (int i=u.size()-1; i>=0; --i) {
+                q.emplace_back(static_cast<u_int64_t>(u[i]+carry*POW32)/v[0]);
+                carry = static_cast<u_int64_t>(u[i]+carry*POW32)%v[0];
+            }
+            std::reverse(q.begin(), q.end());
+            ret._bits=q;
+            ret.delete_leading();
+            *this=ret;
+            return *this;
+        }
+        u_int64_t n=v.size();
+        u_int64_t m=u.size()-n;
+        u_int64_t d=POW32/(static_cast<u_int64_t>(v[n-1])+1);
+        u.emplace_back(0);
+        u_int32_t carry = 0;
+        for (int i=0; i<u.size(); ++i) {
+            u_int64_t k = static_cast<u_int64_t>(u[i])*d+carry;
+            u[i] = k%POW32;
+            carry = k/POW32;
+        }
+        carry=0;
+        for (int i=0; i<v.size(); ++i) {
+            u_int64_t k = static_cast<u_int64_t>(v[i])*d+carry;
+            v[i] = k%POW32;
+            carry = k/POW32;
+        }
+
+        for (int j=m; j>=0; --j) {
+            u_int64_t qhat = (static_cast<u_int64_t>(u[j+n])*POW32+u[j+n-1])/v[n-1];
+            u_int64_t rhat = (static_cast<u_int64_t>(u[j+n])*POW32+u[j+n-1])%v[n-1];
+            while (qhat==POW32 || (qhat*v[n-2]>POW32*rhat+u[j+n-2])) {
+                --qhat;
+                rhat += v[n-1];
+                if (rhat>=POW32) break;
+            }
+            carry=0;
+            for (int i=0; i<n; ++i) {
+                u_int64_t k = qhat*static_cast<u_int64_t>(v[i])+carry;
+                carry=k>u[j+i];
+                u[j+i] = (u[j+i]-k%POW32+POW32)%POW32;
+            }
+            u_int64_t k=carry;
+            carry=k>u[j+n];
+            u[j+n] = (u[j+n]-k%POW32+POW32)%POW32;
+
+            if (carry!=0) {
+                --qhat;
+                carry=0;
+                for (int i=0; i<n; ++i) {
+                    u_int64_t k = static_cast<u_int64_t>(v[i])+u[j+i]+carry;
+                    u[j+i] = k%POW32;
+                    carry = k/POW32;
+                }
+                u[j+n] = (u[j+n]+carry)%POW32;
+            }
+            q.emplace_back(qhat);
+        }
+        std::reverse(q.begin(), q.end());
+        ret._bits=q;
         ret.delete_leading();
         *this=ret;
         return *this;
