@@ -14,14 +14,29 @@ bigfloat pi=0_bf;
 bigfloat four=4_bf;
 bigfloat two=2_bf;
 bigfloat one=1_bf;
+bigfloat eight=8_bf;
+bigfloat five=5_bf;
+bigfloat six=6_bf;
+bigfloat sixteen=16_bf;
 
-std::vector<bigfloat> v;
+int p;
+
+bigfloat binpow(bigfloat x, int y) {
+    if (y==0) return 1_bf;
+    if (y==1) return x;
+    bigfloat res=binpow(x,y/2);
+    if (y%2==0) return res*res;
+    return res*res*x;
+}
 
 void foo(int l, int r) {
     static std::mutex m;
+    bigfloat b=binpow(sixteen,l);
     bigfloat add=0_bf;
     for (int i=l; i<r; ++i) {
-        add += ((four / (8 * i + 1)) - (two / (8 * i + 4)) - (one / (8 * i + 5)) - (one / (8 * i + 6))) / v[i];
+        add += ((four / (eight * i + one)) - (two / (eight * i + four)) - (one / (eight * i + five)) - (one / (eight * i + six))) / b;
+        b*=sixteen;
+
     }
     m.lock();
     pi+=add;
@@ -37,13 +52,13 @@ int main() {
     if (n==0) n=threads;
     else while (n%threads!=0) ++n;
 
+    p=(n+7)/8;
+    four=bigfloat(4,p);
+    two=bigfloat(2,p);
+    one=bigfloat(1,p);
+    sixteen=bigfloat(16,p);
+
     auto start = std::chrono::high_resolution_clock::now();
-    bigfloat base = 1_bf;
-    v.resize(n);
-    for (int k = 0; k < v.size(); k++) {
-        v[k] = base;
-        base *= 16_bf;
-    }
 
     std::vector<std::thread> vv(threads);
     for (int i = 0; i < vv.size(); ++i) {
