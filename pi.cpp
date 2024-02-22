@@ -14,33 +14,33 @@ bigfloat pi=0_bf;
 bigfloat four=4_bf;
 bigfloat two=2_bf;
 bigfloat one=1_bf;
-bigfloat sixteen=16_bf;
 
 bigint onebi=1_bi;
 bigint eightbi=8_bi;
 bigint fourbi=4_bi;
 bigint fivebi=5_bi;
 bigint sixbi=6_bi;
+bigint sixteen=16_bi;
 
 int p;
 
-bigfloat binpow(bigfloat x, int y) {
-    if (y==0) return 1_bf;
+bigint binpow(bigint x, int y) {
+    if (y==0) return onebi;
     if (y==1) return x;
-    bigfloat res=binpow(x,y/2);
+    bigint res=binpow(x,y/2);
     if (y%2==0) return res*res;
     return res*res*x;
 }
 
 void foo(int l, int r) {
     static std::mutex m;
-    bigfloat b=binpow(sixteen,l);
+    bigint b=binpow(sixteen,l);
     bigfloat add=0_bf;
     bigint mult=eightbi*l;
     for (int i=l; i<r; ++i) {
-        add += ((four / bigfloat(mult + onebi, p)) - (two / bigfloat(mult + fourbi, p)) - (one / bigfloat(mult + fivebi,p)) - (one / bigfloat(mult + sixbi,p))) / b;
+        add += ((four / bigfloat(mult + onebi, p)) - (two / bigfloat(mult + fourbi, p)) - (one / bigfloat(mult + fivebi,p)) - (one / bigfloat(mult + sixbi,p))) / bigfloat(b,p);
         mult+=eightbi;
-        b*=sixteen;
+        b<<=fourbi;
     }
     m.lock();
     pi+=add;
@@ -60,7 +60,6 @@ int main() {
     four=bigfloat(4,p);
     two=bigfloat(2,p);
     one=bigfloat(1,p);
-    sixteen=bigfloat(16,p);
 
     auto start = std::chrono::high_resolution_clock::now();
 
