@@ -31,6 +31,16 @@ namespace aak {
         bigfloat::set(str);
     }
 
+    bigfloat::bigfloat(const bigint &value, u_int64_t precision) {
+        _data = std::make_unique<bigarithm>();
+        std::vector<u_int32_t> bits=value._data->get_bits();
+        std::vector<u_int32_t> zeros(precision,0);
+        bits.insert(bits.begin(), zeros.begin(), zeros.end());
+        _data->set_bits(bits);
+        _data->set_state(value._data->get_state());
+        _precision=precision;
+    }
+
     bigfloat::bigfloat(const bigarithm &other, u_int64_t precision) {
         _data = std::make_unique<bigarithm>(other);
         _precision=precision;
@@ -388,6 +398,7 @@ namespace aak {
 
     std::string bigfloat::decimal(u_int64_t c) {
         std::string s=as_string();
+        if (s=="NaN" || s=="oo" || s=="undefined") return s;
         size_t pos=s.find('.');
         if (c==0) {
             if (pos==-1) return s;

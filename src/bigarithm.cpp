@@ -555,7 +555,7 @@ namespace aak {
         return _bits.size();
     }
 
-    u_int8_t bigarithm::get_state() const {
+    bigarithm::State bigarithm::get_state() const {
         return _state;
     }
 

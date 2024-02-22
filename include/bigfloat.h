@@ -20,6 +20,7 @@ namespace aak {
         bigfloat(const bigfloat &other); // from another bigfloat
         bigfloat(double value, u_int64_t precision = DEFAULT); // from a number
         bigfloat(const std::string &str, u_int64_t precision = DEFAULT); // from string presentation of a number
+        explicit bigfloat(const bigint &value, u_int64_t precision = DEFAULT); // from bigint
     private:
         bigfloat(const bigarithm &other, u_int64_t precision = DEFAULT); // from raw bigarithm data
     public:

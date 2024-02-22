@@ -81,7 +81,7 @@ namespace aak {
         std::vector<u_int32_t> get_bits() const; // get raw bits
         u_int32_t get_bits(u_int64_t pos) const; // get bits from precise index
         u_int64_t get_sz() const; // get size of _bits
-        u_int8_t get_state() const; // get state
+        State get_state() const; // get state
 
         void set(const bigarithm &other); // set as other bigarithm
         void set_bits(const std::vector<u_int32_t> &other); // set full bits

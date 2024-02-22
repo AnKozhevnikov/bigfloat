@@ -14,10 +14,13 @@ bigfloat pi=0_bf;
 bigfloat four=4_bf;
 bigfloat two=2_bf;
 bigfloat one=1_bf;
-bigfloat eight=8_bf;
-bigfloat five=5_bf;
-bigfloat six=6_bf;
 bigfloat sixteen=16_bf;
+
+bigint onebi=1_bi;
+bigint eightbi=8_bi;
+bigint fourbi=4_bi;
+bigint fivebi=5_bi;
+bigint sixbi=6_bi;
 
 int p;
 
@@ -33,10 +36,11 @@ void foo(int l, int r) {
     static std::mutex m;
     bigfloat b=binpow(sixteen,l);
     bigfloat add=0_bf;
+    bigint mult=eightbi*l;
     for (int i=l; i<r; ++i) {
-        add += ((four / (eight * i + one)) - (two / (eight * i + four)) - (one / (eight * i + five)) - (one / (eight * i + six))) / b;
+        add += ((four / bigfloat(mult + onebi, p)) - (two / bigfloat(mult + fourbi, p)) - (one / bigfloat(mult + fivebi,p)) - (one / bigfloat(mult + sixbi,p))) / b;
+        mult+=eightbi;
         b*=sixteen;
-
     }
     m.lock();
     pi+=add;
